@@ -621,3 +621,42 @@ class XGBRegressor(XGBModel, XGBRegressorBase):
     # pylint: disable=missing-docstring
     __doc__ = """Implementation of the scikit-learn API for XGBoost regression.
     """ + '\n'.join(XGBModel.__doc__.split('\n')[2:])
+
+
+class XGBCalibrator(XGBClassifier):
+    # pylint: disable=missing-docstring,too-many-arguments,invalid-name
+    __doc__ = """Implementation of the scikit-learn API for XGBoost calibration.
+
+    """ + '\n'.join(XGBModel.__doc__.split('\n')[2:])
+
+    def __init__(self, max_depth=5, learning_rate=0.1,
+                 n_estimators=100, silent=True,
+                 objective="binary:logistic", booster='gbtree',
+                 n_jobs=1, nthread=None, gamma=0, min_child_weight=1,
+                 max_delta_step=0, subsample=1, colsample_bytree=1, colsample_bylevel=1,
+                 reg_alpha=0, reg_lambda=1, scale_pos_weight=1,
+                 base_score=0.5, random_state=0, seed=None, missing=None, **kwargs):
+        kwargs_calibration = kwargs
+        kwargs_calibration['monotone_constraints'] = '(1)'
+        super(XGBCalibrator, self).__init__(max_depth, learning_rate,
+                                            n_estimators, silent, objective, booster,
+                                            n_jobs, nthread, gamma, min_child_weight,
+                                            max_delta_step, subsample,
+                                            colsample_bytree, colsample_bylevel,
+                                            reg_alpha, reg_lambda,
+                                            scale_pos_weight, base_score,
+                                            random_state, seed, missing, **kwargs_calibration)
+
+    def fit(self, X, y, sample_weight=None, eval_set=None, eval_metric=None,
+            early_stopping_rounds=None, verbose=True, xgb_model=None):
+        if len(X.shape) == 1:
+           # 1d array
+           X = X.reshape(len(X), 1)
+        return XGBClassifier.fit(self, X, y, sample_weight=None, eval_set=None, eval_metric=None,
+                                 early_stopping_rounds=None, verbose=True, xgb_model=None)
+
+    def predict_proba(self, data, output_margin=False, ntree_limit=0):
+        if len(data.shape) == 1:
+           # 1d array
+           data = data.reshape(len(data), 1)
+        return XGBClassifier.predict_proba(self, data, output_margin=False, ntree_limit=0)

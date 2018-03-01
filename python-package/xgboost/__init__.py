@@ -12,7 +12,7 @@ from .core import DMatrix, Booster
 from .training import train, cv
 from . import rabit                   # noqa
 try:
-    from .sklearn import XGBModel, XGBClassifier, XGBRegressor
+    from .sklearn import XGBModel, XGBClassifier, XGBRegressor, XGBCalibrator
     from .plotting import plot_importance, plot_tree, to_graphviz
 except ImportError:
     pass
