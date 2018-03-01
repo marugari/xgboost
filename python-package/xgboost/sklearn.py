@@ -652,11 +652,12 @@ class XGBCalibrator(XGBClassifier):
         if len(X.shape) == 1:
            # 1d array
            X = np.reshape(X, (len(X), 1))
-        return XGBClassifier.fit(self, X, y, sample_weight=None, eval_set=None, eval_metric=None,
-                                 early_stopping_rounds=None, verbose=True, xgb_model=None)
+        super(XGBCalibrator, self).fit(X, y, sample_weight, eval_set, eval_metric,
+                                       early_stopping_rounds, verbose, xgb_model)
+        return self
 
     def predict_proba(self, data, output_margin=False, ntree_limit=0):
         if len(data.shape) == 1:
            # 1d array
            data = np.reshape(data, (len(data), 1))
-        return XGBClassifier.predict_proba(self, data, output_margin=False, ntree_limit=0)
+        return super(XGBCalibrator, self).predict_proba(data, output_margin, ntree_limit)
